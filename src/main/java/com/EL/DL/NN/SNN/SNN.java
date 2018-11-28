@@ -238,6 +238,7 @@ public class SNN {
                         neuralLoss += invisibleLayer[i].getLossValue() * invisibleLayer[i].getWeight()[inputDimension];
                     }
                     inputBiasedNeural.setLossValue(neuralLoss);
+
 //                    printNNInformation(lossEfficient);
                     if (String.valueOf(predictResults[k]).equals("NaN")) {
                         System.exit(1);
@@ -397,43 +398,43 @@ public class SNN {
         if (outputNeuralKind == 0) {
             //输出神经元1号到隐含2层的边权重调节
             for (int i = 0; i < inputDimension; i++) {
-                outputNeural.getWeight()[i] = outputNeural.getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural.getValue()) * outputNeural.getLossValue() * invisibleLayer2[i].getValue();
+                outputNeural.getWeight()[i] = outputNeural.getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural.getSimpleSumValue()) * outputNeural.getLossValue() * invisibleLayer2[i].getValue();
             }
             //输出层到隐含2层偏置神经元的调节
-            outputNeural.getWeight()[inputDimension] = outputNeural.getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural.getValue()) * outputNeural.getLossValue() * invisibleBiasedNeural2.getValue();
+            outputNeural.getWeight()[inputDimension] = outputNeural.getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural.getSimpleSumValue()) * outputNeural.getLossValue() * invisibleBiasedNeural2.getValue();
         }
 
         if (outputNeuralKind == 1) {
             //输出神经元2号对隐含2层的边的权重调节
             for (int i = 0; i < inputDimension; i++) {
-                outputNeural2.getWeight()[i] = outputNeural2.getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural2.getValue()) * outputNeural2.getLossValue() * invisibleLayer2[i].getValue();
+                outputNeural2.getWeight()[i] = outputNeural2.getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural2.getSimpleSumValue()) * outputNeural2.getLossValue() * invisibleLayer2[i].getValue();
             }
             //输出神经元2号对偏置神经元的权重调节
-            outputNeural2.getWeight()[inputDimension] = outputNeural2.getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural2.getValue()) * outputNeural2.getLossValue() * invisibleBiasedNeural2.getValue();
+            outputNeural2.getWeight()[inputDimension] = outputNeural2.getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(outputNeural2.getSimpleSumValue()) * outputNeural2.getLossValue() * invisibleBiasedNeural2.getValue();
         }
 
         //隐含层2到隐含层1的边权重调节
         for (int i = 0; i < invisibleDimension; i++) {
             for (int j = 0; j < inputDimension; j++) {
-                invisibleLayer2[j].getWeight()[i] = invisibleLayer2[j].getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer2[j].getValue()) * invisibleLayer2[j].getLossValue() * invisibleLayer[i].getValue();
+                invisibleLayer2[j].getWeight()[i] = invisibleLayer2[j].getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer2[j].getSimpleSumValue()) * invisibleLayer2[j].getLossValue() * invisibleLayer[i].getValue();
             }
         }
 
         //隐含2层到隐含1层偏置神经元的权重调节
         for (int i = 0; i < inputDimension; i++) {
-            invisibleLayer2[i].getWeight()[invisibleDimension] = invisibleLayer2[i].getWeight()[invisibleDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer2[i].getValue()) * invisibleLayer2[i].getLossValue() * invisibleBiasedNeural.getValue();
+            invisibleLayer2[i].getWeight()[invisibleDimension] = invisibleLayer2[i].getWeight()[invisibleDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer2[i].getSimpleSumValue()) * invisibleLayer2[i].getLossValue() * invisibleBiasedNeural.getValue();
         }
 
         //隐含层1到输入层的边权重调节
         for (int i = 0; i < inputDimension; i++) {
             for (int j = 0; j < invisibleDimension; j++) {
-                invisibleLayer[j].getWeight()[i] = invisibleLayer[j].getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer[j].getValue()) * invisibleLayer[j].getLossValue() * inputLayer[i].getValue();
+                invisibleLayer[j].getWeight()[i] = invisibleLayer[j].getWeight()[i] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer[j].getSimpleSumValue()) * invisibleLayer[j].getLossValue() * inputLayer[i].getValue();
             }
         }
 
         //隐含1层到输入偏置神经元的权重调节
         for (int i = 0; i < invisibleDimension; i++) {
-            invisibleLayer[i].getWeight()[inputDimension] = invisibleLayer[i].getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer[i].getValue()) * invisibleLayer[i].getLossValue() * inputBiasedNeural.getValue();
+            invisibleLayer[i].getWeight()[inputDimension] = invisibleLayer[i].getWeight()[inputDimension] + learningSpeed * SNNUtil.getCoefficientActivatedValue(invisibleLayer[i].getSimpleSumValue()) * invisibleLayer[i].getLossValue() * inputBiasedNeural.getValue();
         }
     }
 
@@ -450,6 +451,7 @@ public class SNN {
                 sum += inputLayer[j].getValue() * invisibleLayer[i].getWeight()[j];
             }
             sum += inputBiasedNeural.getValue() * invisibleLayer[i].getWeight()[inputDimension];
+            invisibleLayer[i].setSimpleSumValue(sum);
             invisibleLayer[i].setValue(SNNUtil.getActivatedValue(sum));
         }
 
@@ -460,6 +462,7 @@ public class SNN {
                 sum += invisibleLayer[j].getValue() * invisibleLayer2[i].getWeight()[j];
             }
             sum += invisibleBiasedNeural.getValue() * invisibleLayer2[i].getWeight()[invisibleDimension];
+            invisibleLayer2[i].setSimpleSumValue(sum);
             invisibleLayer2[i].setValue(SNNUtil.getActivatedValue(sum));
         }
 
@@ -469,6 +472,8 @@ public class SNN {
             returnValue1 += invisibleLayer2[i].getValue() * outputNeural.getWeight()[i];
         }
         returnValue1 += invisibleBiasedNeural2.getValue() * outputNeural.getWeight()[inputDimension];
+        outputNeural.setSimpleSumValue(returnValue1);
+        outputNeural.setValue(SNNUtil.getActivatedValue(returnValue1));
         outputs[0] = SNNUtil.getActivatedValue(returnValue1);
 
         double returnValue2 = 0;
@@ -476,6 +481,8 @@ public class SNN {
             returnValue2 += invisibleLayer2[i].getValue() * outputNeural2.getWeight()[i];
         }
         returnValue2 += invisibleBiasedNeural2.getValue() * outputNeural2.getWeight()[inputDimension];
+        outputNeural2.setSimpleSumValue(returnValue2);
+        outputNeural2.setValue(SNNUtil.getActivatedValue(returnValue2));
         outputs[1] = SNNUtil.getActivatedValue(returnValue2);
 
         return outputs;
