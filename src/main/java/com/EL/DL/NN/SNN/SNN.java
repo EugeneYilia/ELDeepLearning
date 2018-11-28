@@ -221,7 +221,7 @@ public class SNN {
 //                    }
 //                }
                     //                    System.out.println("目前训练次数为" + trainingTimes + "   代数为" + epoch + "   预测结果为" + predictResult + "   实际结果为" + realResult + "   准确度为" +String.valueOf(predictResult)+"/"+String.valueOf(realResult));
-                    int train_times = realResult == 1?300:1;
+                    int train_times = realResult == 1?500:1;
                     for(int i =0;i<train_times;i++) {
                         if ((1 - Math.abs(predictResults[k] - realResults[k])) >= 0.95) {
                             evolveSNN(lossEfficient, k);
