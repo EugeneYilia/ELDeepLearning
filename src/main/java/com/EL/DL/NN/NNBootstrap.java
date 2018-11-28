@@ -12,6 +12,7 @@ public class NNBootstrap {
         snn.setSource("/home/eugeneliu/IdeaProjects/ELNeuralNetwork/data/Credit Card Fraud Detection/creditcard.csv")
                 .dropHeader(true)
                 .buildSNN()
+                .preprocessData()
                 .trainSNNAutomatically();
 //                .trainSNN(10);
         BufferedReader bufferedReader = null;

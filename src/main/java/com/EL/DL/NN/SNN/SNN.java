@@ -14,6 +14,9 @@ public class SNN {
     private int trainingTimes = 0;
     private double learningSpeed = 0.05;//default learning speed
 
+    private int _1_data_count = 0;
+    private int _0_data_count = 0;
+
 //    private double sumReal = 0;
 //    private double sumPredict = 0;
 
@@ -98,6 +101,43 @@ public class SNN {
                 } catch (IOException ignored) {
 
                 }
+            }
+        }
+        return this;
+    }
+
+    public SNN preprocessData() {
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader(new File("/home/eugeneliu/IdeaProjects/ELNeuralNetwork/data/Credit Card Fraud Detection/creditcard.csv")));
+            String line = null;
+            bufferedReader.readLine();
+            while ((line = bufferedReader.readLine()) != null) {
+                StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
+                int numbers = stringTokenizer.countTokens();
+                for (int i = 0; i < numbers - 1; i++) {
+                    stringTokenizer.nextToken();
+                }
+                double result = Double.parseDouble(stringTokenizer.nextToken().substring(1, 2));
+                if (result == 1) {
+                    _1_data_count++;
+                } else if (result == 0) {
+                    _0_data_count++;
+                }
+            }
+            if(_1_data_count < _0_data_count){
+                _1_data_count = _0_data_count / _1_data_count;
+                _0_data_count = 1;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return this;
@@ -221,8 +261,10 @@ public class SNN {
 //                    }
 //                }
                     //                    System.out.println("目前训练次数为" + trainingTimes + "   代数为" + epoch + "   预测结果为" + predictResult + "   实际结果为" + realResult + "   准确度为" +String.valueOf(predictResult)+"/"+String.valueOf(realResult));
-                    int train_times = realResult == 1?500:1;
-                    for(int i =0;i<train_times;i++) {
+                    int train_times = realResult == 1 ? _1_data_count : _0_data_count;
+                    train_times = train_times == 0 ? 1 : train_times;
+//                    System.out.println(_0_data_count + "    " + _1_data_count + "    " + train_times);
+                    for (int i = 0; i < train_times; i++) {
                         if ((1 - Math.abs(predictResults[k] - realResults[k])) >= 0.95) {
                             evolveSNN(lossEfficient, k);
                         } else if ((1 - Math.abs(predictResults[k] - realResults[k])) >= 0.7) {
